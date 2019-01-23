@@ -2,7 +2,6 @@
 import datetime
 import logging
 import os
-import socket
 import tempfile
 import time
 from collections import OrderedDict
@@ -11,8 +10,6 @@ from datetime import datetime as dt
 import torch
 from tqdm import tqdm
 
-from maskrcnn_benchmark.kitti_vis import vis_2d_boxes_list, read_img
-from maskrcnn_benchmark.modeling.roi_heads.mask_head.inference import Masker
 from maskrcnn_benchmark.structures.boxlist_ops import boxlist_iou
 from maskrcnn_benchmark.utils.miscellaneous import mkdir
 from ..structures.bounding_box import BoxList
@@ -156,9 +153,6 @@ def inference(
     if not os.path.exists(output_folder):
         mkdir(output_folder)
 
-    # if output_folder:
-    #     torch.save(predictions, os.path.join(output_folder, "predictions.pth"))
-
     if box_only:
         logger.info("Evaluating bbox proposals")
         areas = {"all": "", "small": "s", "medium": "m", "large": "l"}
@@ -177,9 +171,6 @@ def inference(
         return
     logger.info("Preparing results for COCO format")
     coco_results = {}
-    # if "bbox" in iou_types:
-    #     logger.info("Preparing bbox results")
-    #     coco_results["bbox"] = prepare_for_coco_detection(predictions, dataset, output_folder)
     if "segm" in iou_types:
         logger.info("Preparing segm results")
         coco_results["segm"] = prepare_for_coco_segmentation(predictions, dataset)
