@@ -5,9 +5,9 @@ from torch.nn import functional as F
 
 from maskrcnn_benchmark.modeling import registry
 from maskrcnn_benchmark.modeling.backbone import resnet
+from maskrcnn_benchmark.modeling.poolers import Pooler
 from maskrcnn_benchmark.modeling.make_layers import group_norm
 from maskrcnn_benchmark.modeling.make_layers import make_fc
-from maskrcnn_benchmark.modeling.poolers import Pooler
 
 
 @registry.ROI_BOX_FEATURE_EXTRACTORS.register("ResNet50Conv5ROIFeatureExtractor")
@@ -96,7 +96,7 @@ class FPNXconv1fcFeatureExtractor(nn.Module):
             sampling_ratio=sampling_ratio,
         )
         self.pooler = pooler
-
+        
         use_gn = cfg.MODEL.ROI_BOX_HEAD.USE_GN
         in_channels = cfg.MODEL.BACKBONE.OUT_CHANNELS
         conv_head_dim = cfg.MODEL.ROI_BOX_HEAD.CONV_HEAD_DIM
@@ -122,7 +122,7 @@ class FPNXconv1fcFeatureExtractor(nn.Module):
             xconvs.append(nn.ReLU(inplace=True))
 
         self.add_module("xconvs", nn.Sequential(*xconvs))
-        for modules in [self.xconvs, ]:
+        for modules in [self.xconvs,]:
             for l in modules.modules():
                 if isinstance(l, nn.Conv2d):
                     torch.nn.init.normal_(l.weight, std=0.01)

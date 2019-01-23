@@ -5,6 +5,7 @@ from collections import OrderedDict
 
 import torch
 
+from maskrcnn_benchmark.utils.model_serialization import load_state_dict
 from maskrcnn_benchmark.utils.registry import Registry
 
 
@@ -54,12 +55,11 @@ def _rename_basic_resnet_weights(layer_keys):
     layer_keys = [k.replace("conv3.gn.s", "bn3.weight") for k in layer_keys]
     layer_keys = [k.replace("conv3.gn.bias", "bn3.bias") for k in layer_keys]
     layer_keys = [k.replace("downsample.0.gn.s", "downsample.1.weight") \
-                  for k in layer_keys]
+        for k in layer_keys]
     layer_keys = [k.replace("downsample.0.gn.bias", "downsample.1.bias") \
-                  for k in layer_keys]
+        for k in layer_keys]
 
     return layer_keys
-
 
 def _rename_fpn_weights(layer_keys, stage_names):
     for mapped_idx, stage_name in enumerate(stage_names, 1):
@@ -67,11 +67,10 @@ def _rename_fpn_weights(layer_keys, stage_names):
         if mapped_idx < 4:
             suffix = ".lateral"
         layer_keys = [
-            k.replace("fpn.inner.layer{}.sum{}".format(stage_name, suffix), "fpn_inner{}".format(mapped_idx)) for k in
-            layer_keys
+            k.replace("fpn.inner.layer{}.sum{}".format(stage_name, suffix), "fpn_inner{}".format(mapped_idx)) for k in layer_keys
         ]
-        layer_keys = [k.replace("fpn.layer{}.sum".format(stage_name), "fpn_layer{}".format(mapped_idx)) for k in
-                      layer_keys]
+        layer_keys = [k.replace("fpn.layer{}.sum".format(stage_name), "fpn_layer{}".format(mapped_idx)) for k in layer_keys]
+
 
     layer_keys = [k.replace("rpn.conv.fpn2", "rpn.conv") for k in layer_keys]
     layer_keys = [k.replace("rpn.bbox_pred.fpn2", "rpn.bbox_pred") for k in layer_keys]

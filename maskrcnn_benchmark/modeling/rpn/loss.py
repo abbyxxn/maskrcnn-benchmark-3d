@@ -7,12 +7,13 @@ file
 import torch
 from torch.nn import functional as F
 
+from ..balanced_positive_negative_sampler import BalancedPositiveNegativeSampler
+from ..utils import cat
+
 from maskrcnn_benchmark.layers import smooth_l1_loss
 from maskrcnn_benchmark.modeling.matcher import Matcher
 from maskrcnn_benchmark.structures.boxlist_ops import boxlist_iou
 from maskrcnn_benchmark.structures.boxlist_ops import cat_boxlist
-from ..balanced_positive_negative_sampler import BalancedPositiveNegativeSampler
-from ..utils import cat
 
 
 class RPNLossComputation(object):
@@ -101,7 +102,7 @@ class RPNLossComputation(object):
         # all feature levels concatenated, so we keep the same representation
         # for the objectness and the box_regression
         for objectness_per_level, box_regression_per_level in zip(
-                objectness, box_regression
+            objectness, box_regression
         ):
             N, A, H, W = objectness_per_level.shape
             objectness_per_level = objectness_per_level.permute(0, 2, 3, 1).reshape(

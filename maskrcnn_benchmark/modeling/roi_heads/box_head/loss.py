@@ -3,13 +3,13 @@ import torch
 from torch.nn import functional as F
 
 from maskrcnn_benchmark.layers import smooth_l1_loss
+from maskrcnn_benchmark.modeling.box_coder import BoxCoder
+from maskrcnn_benchmark.modeling.matcher import Matcher
+from maskrcnn_benchmark.structures.boxlist_ops import boxlist_iou
 from maskrcnn_benchmark.modeling.balanced_positive_negative_sampler import (
     BalancedPositiveNegativeSampler
 )
-from maskrcnn_benchmark.modeling.box_coder import BoxCoder
-from maskrcnn_benchmark.modeling.matcher import Matcher
 from maskrcnn_benchmark.modeling.utils import cat
-from maskrcnn_benchmark.structures.boxlist_ops import boxlist_iou
 
 
 class FastRCNNLossComputation(object):
@@ -89,7 +89,7 @@ class FastRCNNLossComputation(object):
         proposals = list(proposals)
         # add corresponding label and regression_targets information to the bounding boxes
         for labels_per_image, regression_targets_per_image, proposals_per_image in zip(
-                labels, regression_targets, proposals
+            labels, regression_targets, proposals
         ):
             proposals_per_image.add_field("labels", labels_per_image)
             proposals_per_image.add_field(
@@ -99,7 +99,7 @@ class FastRCNNLossComputation(object):
         # distributed sampled proposals, that were obtained on all feature maps
         # concatenated via the fg_bg_sampler, into individual feature map levels
         for img_idx, (pos_inds_img, neg_inds_img) in enumerate(
-                zip(sampled_pos_inds, sampled_neg_inds)
+            zip(sampled_pos_inds, sampled_neg_inds)
         ):
             img_sampled_inds = torch.nonzero(pos_inds_img | neg_inds_img).squeeze(1)
             proposals_per_image = proposals[img_idx][img_sampled_inds]

@@ -1,8 +1,10 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
-import logging
 from collections import OrderedDict
+import logging
 
 import torch
+
+from maskrcnn_benchmark.utils.imports import import_file
 
 
 def align_and_update_state_dicts(model_state_dict, loaded_state_dict):

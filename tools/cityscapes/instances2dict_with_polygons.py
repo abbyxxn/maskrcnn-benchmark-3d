@@ -4,11 +4,9 @@
 # This files is created according to https://github.com/facebookresearch/Detectron/issues/111
 
 from __future__ import print_function, absolute_import, division
+import os, sys
 
-import os
-import sys
-
-sys.path.append(os.path.normpath(os.path.join(os.path.dirname(__file__), '..', 'helpers')))
+sys.path.append( os.path.normpath( os.path.join( os.path.dirname( __file__ ) , '..' , 'helpers' ) ) )
 from csHelpers import *
 
 # Cityscapes imports
@@ -19,7 +17,7 @@ from maskrcnn_benchmark.utils import cv2_util
 
 
 def instances2dict_with_polygons(imageFileList, verbose=False):
-    imgCount = 0
+    imgCount     = 0
     instanceDict = {}
 
     if not isinstance(imageFileList, list):
@@ -47,7 +45,7 @@ def instances2dict_with_polygons(imageFileList, verbose=False):
             instanceObj = Instance(imgNp, instanceId)
             instanceObj_dict = instanceObj.toDict()
 
-            # instances[id2label[instanceObj.labelID].name].append(instanceObj.toDict())
+            #instances[id2label[instanceObj.labelID].name].append(instanceObj.toDict())
             if id2label[instanceObj.labelID].hasInstances:
                 mask = (imgNp == instanceId).astype(np.uint8)
                 contour, hier = cv2_util.findContours(
@@ -71,7 +69,6 @@ def instances2dict_with_polygons(imageFileList, verbose=False):
 
     return instanceDict
 
-
 def main(argv):
     fileList = []
     if (len(argv) > 2):
@@ -79,7 +76,6 @@ def main(argv):
             if ("png" in arg):
                 fileList.append(arg)
     instances2dict_with_polygons(fileList, True)
-
 
 if __name__ == "__main__":
     main(sys.argv[1:])

@@ -28,7 +28,6 @@ class Registry(dict):
     Access of module is just like using a dictionary, eg:
         f = some_registry["foo_modeul"]
     '''
-
     def __init__(self, *args, **kwargs):
         super(Registry, self).__init__(*args, **kwargs)
 

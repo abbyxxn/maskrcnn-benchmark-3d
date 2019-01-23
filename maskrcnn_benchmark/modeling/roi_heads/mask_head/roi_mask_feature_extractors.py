@@ -2,9 +2,11 @@
 from torch import nn
 from torch.nn import functional as F
 
-from maskrcnn_benchmark.modeling.make_layers import make_conv3x3
-from maskrcnn_benchmark.modeling.poolers import Pooler
 from ..box_head.roi_box_feature_extractors import ResNet50Conv5ROIFeatureExtractor
+from maskrcnn_benchmark.modeling.poolers import Pooler
+from maskrcnn_benchmark.layers import Conv2d
+from maskrcnn_benchmark.modeling.make_layers import make_conv3x3
+
 
 
 class MaskRCNNFPNFeatureExtractor(nn.Module):
@@ -40,9 +42,9 @@ class MaskRCNNFPNFeatureExtractor(nn.Module):
         self.blocks = []
         for layer_idx, layer_features in enumerate(layers, 1):
             layer_name = "mask_fcn{}".format(layer_idx)
-            module = make_conv3x3(next_feature, layer_features,
-                                  dilation=dilation, stride=1, use_gn=use_gn
-                                  )
+            module = make_conv3x3(next_feature, layer_features, 
+                dilation=dilation, stride=1, use_gn=use_gn
+            )
             self.add_module(layer_name, module)
             next_feature = layer_features
             self.blocks.append(layer_name)

@@ -1,9 +1,9 @@
 import os
-
 import cv2
 import numpy as np
-from scipy import linalg
 
+from scipy import linalg
+from maskrcnn_benchmark import vis_pc
 
 class Camera(object):
     """ Class for representing pin-hole cameras. """

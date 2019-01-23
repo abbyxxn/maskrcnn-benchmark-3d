@@ -27,8 +27,8 @@ class CombinedROIHeads(torch.nn.ModuleDict):
             # optimization: during training, if we share the feature extractor between
             # the box and the mask heads, then we can reuse the features already computed
             if (
-                    self.training
-                    and self.cfg.MODEL.ROI_MASK_HEAD.SHARE_BOX_FEATURE_EXTRACTOR
+                self.training
+                and self.cfg.MODEL.ROI_MASK_HEAD.SHARE_BOX_FEATURE_EXTRACTOR
             ):
                 mask_features = x
             # During training, self.box() will return the unaltered proposals as "detections"

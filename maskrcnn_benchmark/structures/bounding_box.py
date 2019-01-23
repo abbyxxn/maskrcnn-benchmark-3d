@@ -232,7 +232,7 @@ class BoxList(object):
             area = box[:, 2] * box[:, 3]
         else:
             raise RuntimeError("Should not be here")
-
+            
         return area
 
     def copy_with_fields(self, fields):
