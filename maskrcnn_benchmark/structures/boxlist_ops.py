@@ -1,9 +1,8 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 import torch
 
-from .bounding_box import BoxList
-
 from maskrcnn_benchmark.layers import nms as _box_nms
+from .bounding_box import BoxList
 
 
 def boxlist_nms(boxlist, nms_thresh, max_proposals=-1, score_field="score"):
@@ -43,7 +42,7 @@ def remove_small_boxes(boxlist, min_size):
     xywh_boxes = boxlist.convert("xywh").bbox
     _, _, ws, hs = xywh_boxes.unbind(dim=1)
     keep = (
-        (ws >= min_size) & (hs >= min_size)
+            (ws >= min_size) & (hs >= min_size)
     ).nonzero().squeeze(1)
     return boxlist[keep]
 
@@ -66,7 +65,7 @@ def boxlist_iou(boxlist1, boxlist2):
     """
     if boxlist1.size != boxlist2.size:
         raise RuntimeError(
-                "boxlists should have same image size, got {}, {}".format(boxlist1, boxlist2))
+            "boxlists should have same image size, got {}, {}".format(boxlist1, boxlist2))
 
     N = len(boxlist1)
     M = len(boxlist2)

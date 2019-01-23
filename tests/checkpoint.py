@@ -1,14 +1,14 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
-from collections import OrderedDict
 import os
-from tempfile import TemporaryDirectory
 import unittest
+from collections import OrderedDict
+from tempfile import TemporaryDirectory
 
 import torch
 from torch import nn
 
-from maskrcnn_benchmark.utils.model_serialization import load_state_dict
 from maskrcnn_benchmark.utils.checkpoint import Checkpointer
+from maskrcnn_benchmark.utils.model_serialization import load_state_dict
 
 
 class TestCheckpointer(unittest.TestCase):
@@ -40,8 +40,8 @@ class TestCheckpointer(unittest.TestCase):
             (nn.DataParallel(self.create_model()), self.create_model()),
             (self.create_model(), nn.DataParallel(self.create_model())),
             (
-                nn.DataParallel(self.create_model()),
-                nn.DataParallel(self.create_model()),
+                    nn.DataParallel(self.create_model()),
+                    nn.DataParallel(self.create_model()),
             ),
         ]:
 
@@ -61,7 +61,7 @@ class TestCheckpointer(unittest.TestCase):
                 _ = fresh_checkpointer.load()
 
             for trained_p, loaded_p in zip(
-                trained_model.parameters(), fresh_model.parameters()
+                    trained_model.parameters(), fresh_model.parameters()
             ):
                 # different tensor references
                 self.assertFalse(id(trained_p) == id(loaded_p))
@@ -75,8 +75,8 @@ class TestCheckpointer(unittest.TestCase):
             (nn.DataParallel(self.create_model()), self.create_model()),
             (self.create_model(), nn.DataParallel(self.create_model())),
             (
-                nn.DataParallel(self.create_model()),
-                nn.DataParallel(self.create_model()),
+                    nn.DataParallel(self.create_model()),
+                    nn.DataParallel(self.create_model()),
             ),
         ]:
             with TemporaryDirectory() as f:
@@ -93,7 +93,7 @@ class TestCheckpointer(unittest.TestCase):
                     _ = fresh_checkpointer.load(os.path.join(f, "checkpoint_file.pth"))
 
             for trained_p, loaded_p in zip(
-                trained_model.parameters(), fresh_model.parameters()
+                    trained_model.parameters(), fresh_model.parameters()
             ):
                 # different tensor references
                 self.assertFalse(id(trained_p) == id(loaded_p))

@@ -1,8 +1,8 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 import datetime
 import logging
-import time
 import os
+import time
 
 import torch
 from tqdm import tqdm

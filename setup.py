@@ -1,5 +1,5 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
-#!/usr/bin/env python
+# !/usr/bin/env python
 
 import glob
 import os
@@ -7,9 +7,9 @@ import os
 import torch
 from setuptools import find_packages
 from setuptools import setup
+from torch.utils.cpp_extension import CUDAExtension
 from torch.utils.cpp_extension import CUDA_HOME
 from torch.utils.cpp_extension import CppExtension
-from torch.utils.cpp_extension import CUDAExtension
 
 requirements = ["torch", "torchvision"]
 

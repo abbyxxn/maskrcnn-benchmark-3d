@@ -10,6 +10,7 @@ is implemented
 """
 
 import math
+
 import torch
 from torch.nn.modules.utils import _ntuple
 
@@ -24,7 +25,6 @@ class _NewEmptyTensorOp(torch.autograd.Function):
     def backward(ctx, grad):
         shape = ctx.shape
         return _NewEmptyTensorOp.apply(grad, shape), None
-
 
 
 class Conv2d(torch.nn.Conv2d):
@@ -65,7 +65,7 @@ class ConvTranspose2d(torch.nn.ConvTranspose2d):
 
 
 def interpolate(
-    input, size=None, scale_factor=None, mode="nearest", align_corners=None
+        input, size=None, scale_factor=None, mode="nearest", align_corners=None
 ):
     if input.numel() > 0:
         return torch.nn.functional.interpolate(
@@ -78,9 +78,9 @@ def interpolate(
         if size is not None and scale_factor is not None:
             raise ValueError("only one of size or scale_factor should be defined")
         if (
-            scale_factor is not None
-            and isinstance(scale_factor, tuple)
-            and len(scale_factor) != dim
+                scale_factor is not None
+                and isinstance(scale_factor, tuple)
+                and len(scale_factor) != dim
         ):
             raise ValueError(
                 "scale_factor shape must match input shape. "

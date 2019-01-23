@@ -1,7 +1,6 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
-import torch
-
 import pycocotools.mask as mask_utils
+import torch
 
 # transpose
 FLIP_LEFT_RIGHT = 0
@@ -41,7 +40,7 @@ class Mask(object):
     def crop(self, box):
         w, h = box[2] - box[0], box[3] - box[1]
 
-        cropped_masks = self.masks[:, box[1] : box[3], box[0] : box[2]]
+        cropped_masks = self.masks[:, box[1]: box[3], box[0]: box[2]]
         return Mask(cropped_masks, size=(w, h), mode=self.mode)
 
     def resize(self, size, *args, **kwargs):

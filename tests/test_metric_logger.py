@@ -9,7 +9,7 @@ class TestMetricLogger(unittest.TestCase):
         meter = MetricLogger()
         for i in range(10):
             meter.update(metric=float(i))
-        
+
         m = meter.meters["metric"]
         self.assertEqual(m.count, 10)
         self.assertEqual(m.total, 45)
@@ -20,9 +20,12 @@ class TestMetricLogger(unittest.TestCase):
         meter = MetricLogger()
         _ = meter.meters
         _ = meter.delimiter
+
         def broken():
             _ = meter.not_existent
+
         self.assertRaises(AttributeError, broken)
+
 
 if __name__ == "__main__":
     unittest.main()

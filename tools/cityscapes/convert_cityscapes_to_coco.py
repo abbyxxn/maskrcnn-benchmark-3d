@@ -23,16 +23,15 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import argparse
-import h5py
 import json
 import os
-import scipy.misc
 import sys
 
 import cityscapesscripts.evaluation.instances2dict_with_polygons as cs
-
-import detectron.utils.segms as segms_util
 import detectron.utils.boxes as bboxs_util
+import detectron.utils.segms as segms_util
+import h5py
+import scipy.misc
 
 
 def parse_args():
@@ -160,7 +159,7 @@ def convert_cityscapes_instance_only(
                         ends_in % data_set.split('_')[0])] + 'leftImg8bit.png'
                     image['seg_file_name'] = filename[:-len(
                         ends_in % data_set.split('_')[0])] + \
-                        '%s_instanceIds.png' % data_set.split('_')[0]
+                                             '%s_instanceIds.png' % data_set.split('_')[0]
                     images.append(image)
 
                     fullname = os.path.join(root, image['seg_file_name'])

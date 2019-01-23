@@ -18,15 +18,13 @@ Custom implementations may be written in user code and hooked in via the
 """
 from collections import namedtuple
 
-import torch
 import torch.nn.functional as F
 from torch import nn
 
-from maskrcnn_benchmark.layers import FrozenBatchNorm2d
 from maskrcnn_benchmark.layers import Conv2d
+from maskrcnn_benchmark.layers import FrozenBatchNorm2d
 from maskrcnn_benchmark.modeling.make_layers import group_norm
 from maskrcnn_benchmark.utils.registry import Registry
-
 
 # ResNet stage specification
 StageSpec = namedtuple(
@@ -143,15 +141,15 @@ class ResNet(nn.Module):
 
 class ResNetHead(nn.Module):
     def __init__(
-        self,
-        block_module,
-        stages,
-        num_groups=1,
-        width_per_group=64,
-        stride_in_1x1=True,
-        stride_init=None,
-        res2_out_channels=256,
-        dilation=1
+            self,
+            block_module,
+            stages,
+            num_groups=1,
+            width_per_group=64,
+            stride_in_1x1=True,
+            stride_init=None,
+            res2_out_channels=256,
+            dilation=1
     ):
         super(ResNetHead, self).__init__()
 
@@ -191,15 +189,15 @@ class ResNetHead(nn.Module):
 
 
 def _make_stage(
-    transformation_module,
-    in_channels,
-    bottleneck_channels,
-    out_channels,
-    block_count,
-    num_groups,
-    stride_in_1x1,
-    first_stride,
-    dilation=1
+        transformation_module,
+        in_channels,
+        bottleneck_channels,
+        out_channels,
+        block_count,
+        num_groups,
+        stride_in_1x1,
+        first_stride,
+        dilation=1
 ):
     blocks = []
     stride = first_stride
@@ -222,15 +220,15 @@ def _make_stage(
 
 class Bottleneck(nn.Module):
     def __init__(
-        self,
-        in_channels,
-        bottleneck_channels,
-        out_channels,
-        num_groups,
-        stride_in_1x1,
-        stride,
-        dilation,
-        norm_func
+            self,
+            in_channels,
+            bottleneck_channels,
+            out_channels,
+            num_groups,
+            stride_in_1x1,
+            stride,
+            dilation,
+            norm_func
     ):
         super(Bottleneck, self).__init__()
 
@@ -239,14 +237,14 @@ class Bottleneck(nn.Module):
             down_stride = stride if dilation == 1 else 1
             self.downsample = nn.Sequential(
                 Conv2d(
-                    in_channels, out_channels, 
+                    in_channels, out_channels,
                     kernel_size=1, stride=down_stride, bias=False
                 ),
                 norm_func(out_channels),
             )
 
         if dilation > 1:
-            stride = 1 # reset to be 1
+            stride = 1  # reset to be 1
 
         # The original MSRA ResNet models have stride in the first 1x1 conv
         # The subsequent fb.torch.resnet and Caffe2 ResNe[X]t implementations have
@@ -324,14 +322,14 @@ class BaseStem(nn.Module):
 
 class BottleneckWithFixedBatchNorm(Bottleneck):
     def __init__(
-        self,
-        in_channels,
-        bottleneck_channels,
-        out_channels,
-        num_groups=1,
-        stride_in_1x1=True,
-        stride=1,
-        dilation=1
+            self,
+            in_channels,
+            bottleneck_channels,
+            out_channels,
+            num_groups=1,
+            stride_in_1x1=True,
+            stride=1,
+            dilation=1
     ):
         super(BottleneckWithFixedBatchNorm, self).__init__(
             in_channels=in_channels,
@@ -354,14 +352,14 @@ class StemWithFixedBatchNorm(BaseStem):
 
 class BottleneckWithGN(Bottleneck):
     def __init__(
-        self,
-        in_channels,
-        bottleneck_channels,
-        out_channels,
-        num_groups=1,
-        stride_in_1x1=True,
-        stride=1,
-        dilation=1
+            self,
+            in_channels,
+            bottleneck_channels,
+            out_channels,
+            num_groups=1,
+            stride_in_1x1=True,
+            stride=1,
+            dilation=1
     ):
         super(BottleneckWithGN, self).__init__(
             in_channels=in_channels,
