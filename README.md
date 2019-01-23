@@ -1,6 +1,6 @@
 # 3D Object Detection from Stereo Images
 
-This repository contains a partial implementation and improvement of CVPR 2018 paper ['Multi-Level Fusion based 3D Object Detection from Monocular Images'](http://openaccess.thecvf.com/content_cvpr_2018/papers/Xu_Multi-Level_Fusion_Based_CVPR_2018_paper.pdf) by Xu, Chen et al. based on the awesome open source codebase [`maskrcnn-benchmark`](https://github.com/facebookresearch/maskrcnn-benchmark). It is worth noting that depth estimation module([monoDepth](https://github.com/mrharicot/monodepth)) in the original paper is replaced with a more accurate module([PSMNet](https://github.com/JiaRenChang/PSMNet)) to generate disparity maps from stereo images.
+This repository contains a partial implementation of CVPR 2018 paper ['Multi-Level Fusion based 3D Object Detection from Monocular Images'](http://openaccess.thecvf.com/content_cvpr_2018/papers/Xu_Multi-Level_Fusion_Based_CVPR_2018_paper.pdf) by Xu, Chen et al. based on the awesome open source codebase [`maskrcnn-benchmark`](https://github.com/facebookresearch/maskrcnn-benchmark). It is worth noting that depth estimation module(monodepth) in the original paper is replaced with a more accurate module([PSMNet](https://github.com/JiaRenChang/PSMNet)) to generate disparity maps from stereo images.
 
 
 
@@ -9,7 +9,7 @@ This repository contains a partial implementation and improvement of CVPR 2018 p
  - [**`Box3d_head`**](https://github.com/abbyxxn/maskrcnn-benchmark-3d/tree/master/maskrcnn_benchmark/modeling/roi_heads/box3d_head) is a building block similar to `roi_heads/box_head` in 2d, implemented to regress size, dimension and rotation of 3D bounding box.
  - [**`Orientation_coder`**](https://github.com/abbyxxn/maskrcnn-benchmark-3d/blob/master/maskrcnn_benchmark/modeling/orientation_coder.py) the implementation of Multibin in an independent module, separated into encode and decode like modeling/box-coder.
  - [**`KITTIDataset`**](https://github.com/abbyxxn/maskrcnn-benchmark-3d/blob/master/maskrcnn_benchmark/data/datasets/kitti3d.py) a subclasses of torch.utils.data.Dataset, this module support for KITTI dataset and evaluate.
- - [**`KITTI annotations converter`**](https://github.com/abbyxxn/maskrcnn-benchmark-3d/blob/master/maskrcnn_benchmark/data/datasets/convert_kitti_pkl_to_coco_json.py) provide some useful functions convert KITTI annotation to json format, if you want to train 2d object detection on KITTI with original powerful annotation processing tools cocoapi/PythonAPI/pycocotools.
+ - [**`KITTI-COCO Converter`**](https://github.com/abbyxxn/maskrcnn-benchmark-3d/blob/master/maskrcnn_benchmark/data/datasets/convert_kitti_pkl_to_coco_json.py) provide some useful functions convert KITTI annotation to json format, if you want to train 2d object detection on KITTI with original powerful annotation processing tools cocoapi/PythonAPI/pycocotools.
 - [**Tensorboard**](https://github.com/abbyxxn/maskrcnn-benchmark-3d/blob/master/maskrcnn_benchmark/utils/miscellaneous.py#L28) support for training visualization.
 
 ### Installation
