@@ -6,7 +6,7 @@ import torch
 
 from maskrcnn_benchmark.structures.bounding_box import BoxList
 from .roi_box3d_feature_extractors import make_roi_box3d_feature_extractor
-from .roi_box3d_pc_feature_extractors import make_roi_pc_feature_extractor
+from .roi_box3d_feature_extractors import make_roi_pc_feature_extractor
 from .roi_box3d_predictors import make_roi_box3d_predictor
 from .roi_box3d_predictors import make_roi_box3d_predictor_dimension
 from .roi_box3d_predictors import make_roi_box3d_predictor_rotation
