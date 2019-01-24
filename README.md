@@ -20,7 +20,7 @@ You can check INSTALL.md for installation instructions instead.
 Clone the repository
 
 ```
-git clone https://github.com/abbyxxn/maskrcnn_benchmark.git
+git clone https://github.com/abbyxxn/maskrcnn-benchmark-3d
 ```
 
 ## Perform training on KITTI dataset
@@ -52,7 +52,7 @@ Recommend to symlink the path to the kitti dataset to `datasets/` as follows
 
 ```bash
 # symlink the kitti dataset
-cd ~/github/maskrcnn-benchmark
+cd ~/github/maskrcnn-benchmark-3d
 mkdir -p datasets/kitti
 ln -s /path_to_kitti_dataset/object datasets/kitti/object
 
