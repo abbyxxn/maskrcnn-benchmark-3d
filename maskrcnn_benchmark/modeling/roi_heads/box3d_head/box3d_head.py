@@ -5,16 +5,13 @@ import numpy as np
 import torch
 
 from maskrcnn_benchmark.structures.bounding_box import BoxList
-from .inference import make_roi_box3d_post_processor
-from .loss import make_roi_box3d_loss_evaluator
 from .roi_box3d_feature_extractors import make_roi_box3d_feature_extractor
 from .roi_box3d_pc_feature_extractors import make_roi_pc_feature_extractor
 from .roi_box3d_predictors import make_roi_box3d_predictor
-from .roi_box3d_predictors_dim import make_roi_box3d_predictor_dimension
-from .roi_box3d_predictors_loc_pc import make_roi_box3d_predictor_localization_pc
-from .roi_box3d_predictors_loc_roi import make_roi_box3d_predictor_localization_conv
-from .roi_box3d_predictors_rot_conf import make_roi_box3d_predictor_rotation_confidences
-from .roi_box3d_predictors_rot_reg import make_roi_box3d_predictor_rotation_regression
+from .roi_box3d_predictors import make_roi_box3d_predictor_dimension
+from .roi_box3d_predictors import make_roi_box3d_predictor_rotation
+from .roi_box3d_predictors import make_roi_box3d_predictor_localization_pc
+from .roi_box3d_predictors import make_roi_box3d_predictor_localization_conv
 
 
 def keep_only_positive_boxes(boxes):
@@ -51,12 +48,9 @@ class ROIBox3DHead(torch.nn.Module):
         self.pc_feature_extractor = make_roi_pc_feature_extractor(cfg)
         self.predictor = make_roi_box3d_predictor(cfg)
         self.predictor_dimension = make_roi_box3d_predictor_dimension(cfg)
-        self.predictor_rotation_confidences = make_roi_box3d_predictor_rotation_confidences(cfg)
-        self.predictor_rotation_angle_sin_add_cos = make_roi_box3d_predictor_rotation_regression(cfg)
+        self.predictor_rotation = make_roi_box3d_predictor_rotation(cfg)
         self.predictor_localization_conv = make_roi_box3d_predictor_localization_conv(cfg)
         self.predictor_localization_pc = make_roi_box3d_predictor_localization_pc(cfg)
-        self.post_processor = make_roi_box3d_post_processor(cfg)
-        self.loss_evaluator = make_roi_box3d_loss_evaluator(cfg)
 
     def forward(self, features, proposals, targets=None, img_original_ids=None):
         """
@@ -93,8 +87,7 @@ class ROIBox3DHead(torch.nn.Module):
         roi_fusion_feature = self.predictor(fusion_feature)
 
         box3d_dim_regression = self.predictor_dimension(roi_fusion_feature)
-        box3d_rotation_logits = self.predictor_rotation_confidences(roi_fusion_feature)
-        box3d_rotation_regression = self.predictor_rotation_angle_sin_add_cos(roi_fusion_feature)
+        box3d_rotation_logits, box3d_rotation_regression = self.predictor_rotation(roi_fusion_feature)
         box3d_localization_conv_regression = self.predictor_localization_conv(roi_fusion_feature)
         box3d_localization_pc_regression = self.predictor_localization_pc(pc_features)
 
@@ -148,7 +141,7 @@ class ROIBox3DHead(torch.nn.Module):
             stereo_depth = np.load(stereo_depth_path)
             stereo_depth = stereo_depth['depth']
             assert (
-            stereo_depth.shape[0], stereo_depth.shape[1] == proposal_per_image.size[1], proposal_per_image.size[0]), \
+                stereo_depth.shape[0], stereo_depth.shape[1] == proposal_per_image.size[1], proposal_per_image.size[0]), \
                 "{}, {}".format(stereo_depth.shape, proposal_per_image.size)
             device = proposal_per_image.bbox.device
             stereo_depth = torch.as_tensor(stereo_depth, device=device)
