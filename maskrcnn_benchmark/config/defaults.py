@@ -3,7 +3,6 @@ import os
 
 from yacs.config import CfgNode as CN
 
-
 # -----------------------------------------------------------------------------
 # Convention about Training / Test specific parameters
 # -----------------------------------------------------------------------------
@@ -23,6 +22,11 @@ _C = CN()
 _C.MODEL = CN()
 _C.MODEL.RPN_ONLY = False
 _C.MODEL.MASK_ON = False
+_C.MODEL.BOX3D_ON = False
+_C.MODEL.BOX3D_DIMENSION_ON = False
+_C.MODEL.BOX3D_ROTATION_CONFIDENCES_ON = False
+_C.MODEL.BOX3D_ROTATION_REGRESSION_ON = False
+_C.MODEL.BOX3D_LOCALIZATION_ON = False
 _C.MODEL.DEVICE = "cuda"
 _C.MODEL.META_ARCHITECTURE = "GeneralizedRCNN"
 
@@ -30,7 +34,6 @@ _C.MODEL.META_ARCHITECTURE = "GeneralizedRCNN"
 # the path in paths_catalog. Else, it will use it as the specified absolute
 # path
 _C.MODEL.WEIGHT = ""
-
 
 # -----------------------------------------------------------------------------
 # INPUT
@@ -51,7 +54,6 @@ _C.INPUT.PIXEL_STD = [1., 1., 1.]
 # Convert image to BGR format (for Caffe2 models), in range 0-255
 _C.INPUT.TO_BGR255 = True
 
-
 # -----------------------------------------------------------------------------
 # Dataset
 # -----------------------------------------------------------------------------
@@ -61,12 +63,19 @@ _C.DATASETS.TRAIN = ()
 # List of the dataset names for testing, as present in paths_catalog.py
 _C.DATASETS.TEST = ()
 
+# Use by kitti load
+_C.DATASETS.USE_RGBD = True
+_C.DATASETS.USE_RGBL = False
+_C.DATASETS.DISPARITY_DIR_NAME = 'disparity'
+_C.DATASETS.DATASET_CATEGORIES = []
+_C.DATASETS.LIDAR_COORD = []
+
 # -----------------------------------------------------------------------------
 # DataLoader
 # -----------------------------------------------------------------------------
 _C.DATALOADER = CN()
 # Number of data loading threads
-_C.DATALOADER.NUM_WORKERS = 4
+_C.DATALOADER.NUM_WORKERS = 0
 # If > 0, this enforces that each collated batch should have a size divisible
 # by SIZE_DIVISIBILITY
 _C.DATALOADER.SIZE_DIVISIBILITY = 0
@@ -74,7 +83,6 @@ _C.DATALOADER.SIZE_DIVISIBILITY = 0
 # is compatible. This groups portrait images together, and landscape images
 # are not batched with portrait images.
 _C.DATALOADER.ASPECT_RATIO_GROUPING = True
-
 
 # ---------------------------------------------------------------------------- #
 # Backbone options
@@ -90,29 +98,6 @@ _C.MODEL.BACKBONE.CONV_BODY = "R-50-C4"
 # Add StopGrad at a specified stage so the bottom layers are frozen
 _C.MODEL.BACKBONE.FREEZE_CONV_BODY_AT = 2
 _C.MODEL.BACKBONE.OUT_CHANNELS = 256 * 4
-# GN for backbone
-_C.MODEL.BACKBONE.USE_GN = False
-
-
-# ---------------------------------------------------------------------------- #
-# FPN options
-# ---------------------------------------------------------------------------- #
-_C.MODEL.FPN = CN()
-_C.MODEL.FPN.USE_GN = False
-_C.MODEL.FPN.USE_RELU = False
-
-
-# ---------------------------------------------------------------------------- #
-# Group Norm options
-# ---------------------------------------------------------------------------- #
-_C.MODEL.GROUP_NORM = CN()
-# Number of dimensions per group in GroupNorm (-1 if using NUM_GROUPS)
-_C.MODEL.GROUP_NORM.DIM_PER_GP = -1
-# Number of groups in GroupNorm (-1 if using DIM_PER_GP)
-_C.MODEL.GROUP_NORM.NUM_GROUPS = 32
-# GroupNorm's small constant in the denominator
-_C.MODEL.GROUP_NORM.EPSILON = 1e-5
-
 
 # ---------------------------------------------------------------------------- #
 # RPN options
@@ -157,9 +142,6 @@ _C.MODEL.RPN.MIN_SIZE = 0
 # all FPN levels
 _C.MODEL.RPN.FPN_POST_NMS_TOP_N_TRAIN = 2000
 _C.MODEL.RPN.FPN_POST_NMS_TOP_N_TEST = 2000
-# Custom rpn head, empty to use default conv or separable conv
-_C.MODEL.RPN.RPN_HEAD = "SingleConvRPNHead"
-
 
 # ---------------------------------------------------------------------------- #
 # ROI HEADS options
@@ -195,23 +177,15 @@ _C.MODEL.ROI_HEADS.NMS = 0.5
 # established for the COCO dataset)
 _C.MODEL.ROI_HEADS.DETECTIONS_PER_IMG = 100
 
-
 _C.MODEL.ROI_BOX_HEAD = CN()
 _C.MODEL.ROI_BOX_HEAD.FEATURE_EXTRACTOR = "ResNet50Conv5ROIFeatureExtractor"
 _C.MODEL.ROI_BOX_HEAD.PREDICTOR = "FastRCNNPredictor"
 _C.MODEL.ROI_BOX_HEAD.POOLER_RESOLUTION = 14
 _C.MODEL.ROI_BOX_HEAD.POOLER_SAMPLING_RATIO = 0
 _C.MODEL.ROI_BOX_HEAD.POOLER_SCALES = (1.0 / 16,)
-_C.MODEL.ROI_BOX_HEAD.NUM_CLASSES = 81
+_C.MODEL.ROI_BOX_HEAD.NUM_CLASSES = 2
 # Hidden layer dimension when using an MLP for the RoI box head
 _C.MODEL.ROI_BOX_HEAD.MLP_HEAD_DIM = 1024
-# GN
-_C.MODEL.ROI_BOX_HEAD.USE_GN = False
-# Dilation
-_C.MODEL.ROI_BOX_HEAD.DILATION = 1
-_C.MODEL.ROI_BOX_HEAD.CONV_HEAD_DIM = 256
-_C.MODEL.ROI_BOX_HEAD.NUM_STACKED_CONVS = 4
-
 
 _C.MODEL.ROI_MASK_HEAD = CN()
 _C.MODEL.ROI_MASK_HEAD.FEATURE_EXTRACTOR = "ResNet50Conv5ROIFeatureExtractor"
@@ -223,13 +197,30 @@ _C.MODEL.ROI_MASK_HEAD.MLP_HEAD_DIM = 1024
 _C.MODEL.ROI_MASK_HEAD.CONV_LAYERS = (256, 256, 256, 256)
 _C.MODEL.ROI_MASK_HEAD.RESOLUTION = 14
 _C.MODEL.ROI_MASK_HEAD.SHARE_BOX_FEATURE_EXTRACTOR = True
-# Whether or not resize and translate masks to the input image.
-_C.MODEL.ROI_MASK_HEAD.POSTPROCESS_MASKS = False
-_C.MODEL.ROI_MASK_HEAD.POSTPROCESS_MASKS_THRESHOLD = 0.5
-# Dilation
-_C.MODEL.ROI_MASK_HEAD.DILATION = 1
-# GN
-_C.MODEL.ROI_MASK_HEAD.USE_GN = False
+
+_C.MODEL.ROI_BOX3D_HEAD = CN()
+_C.MODEL.ROI_BOX3D_HEAD.FEATURE_EXTRACTOR = "Box3dFeatureExtractor"
+_C.MODEL.ROI_BOX3D_HEAD.POINT_CLOUD_FEATURE_EXTRACTOR = "Box3dPCFeatureExtractor"
+_C.MODEL.ROI_BOX3D_HEAD.PREDICTOR = "Box3DPredictor"
+_C.MODEL.ROI_BOX3D_HEAD.SHARE_BOX_FEATURE_EXTRACTOR = True
+_C.MODEL.ROI_BOX3D_HEAD.PREDICTOR_DIMENSION = "Box3dDimPredictor"
+_C.MODEL.ROI_BOX3D_HEAD.PREDICTOR_ROTATION_CONFIDENCES = "RotationConfidencePredictor"
+_C.MODEL.ROI_BOX3D_HEAD.PREDICTOR_ROTATION_REGRESSION = "RotationRegressionPredictor"
+_C.MODEL.ROI_BOX3D_HEAD.PREDICTOR_LOCALIZATION_CONV = "Box3dLocConvPredictor"
+_C.MODEL.ROI_BOX3D_HEAD.PREDICTOR_LOCALIZATION_PC = "Box3dLocPCPredictor"
+_C.MODEL.ROI_BOX3D_HEAD.POOLER_RESOLUTION = 14
+_C.MODEL.ROI_BOX3D_HEAD.POOLER_SAMPLING_RATIO = 0
+_C.MODEL.ROI_BOX3D_HEAD.POOLER_SCALES = (1.0 / 16,)
+_C.MODEL.ROI_BOX3D_HEAD.PREDICTORS_HEAD_DIM = 512
+_C.MODEL.ROI_BOX3D_HEAD.PREDICTORS_DIMENSION_HEAD_DIM = 512
+_C.MODEL.ROI_BOX3D_HEAD.PREDICTORS_ROTATION_CONFIDENCES_HEAD_DIM = 256
+_C.MODEL.ROI_BOX3D_HEAD.PREDICTORS_ROTATION_REGRESSION_HEAD_DIM = 256
+_C.MODEL.ROI_BOX3D_HEAD.ROTATION_BIN = 2
+_C.MODEL.ROI_BOX3D_HEAD.ROTATION_OVERLAP = 0.1
+_C.MODEL.ROI_BOX3D_HEAD.POINTCLOUD_OUT_CHANNELS = 3
+# Default weights on (dl, dh, dw, dx, dy, dz) for normalizing bbox3d regression targets
+# These are empirically chosen to approximately lead to unit variance targets
+_C.MODEL.ROI_BOX3D_HEAD.BBOX3D_REG_WEIGHTS = (5., 5., 5., 10., 10., 10.)
 
 # ---------------------------------------------------------------------------- #
 # ResNe[X]t options (ResNets = {ResNet, ResNeXt}
@@ -285,7 +276,7 @@ _C.SOLVER.CHECKPOINT_PERIOD = 2500
 # Number of images per batch
 # This is global, so if we have 8 GPUs and IMS_PER_BATCH = 16, each GPU will
 # see 2 images per batch
-_C.SOLVER.IMS_PER_BATCH = 16
+_C.SOLVER.IMS_PER_BATCH = 1
 
 # ---------------------------------------------------------------------------- #
 # Specific test options
@@ -296,12 +287,18 @@ _C.TEST.EXPECTED_RESULTS_SIGMA_TOL = 4
 # Number of images per batch
 # This is global, so if we have 8 GPUs and IMS_PER_BATCH = 16, each GPU will
 # see 2 images per batch
-_C.TEST.IMS_PER_BATCH = 8
+_C.TEST.IMS_PER_BATCH = 1
 
+# ---------------------------------------------------------------------------- #
+# Visualization
+# ---------------------------------------------------------------------------- #
+_C.VIS = CN()
+_C.VIS.USE_TENSORBOARD = False
+_C.VIS.TB_LOG_PERIOD = 20
 
 # ---------------------------------------------------------------------------- #
 # Misc options
 # ---------------------------------------------------------------------------- #
-_C.OUTPUT_DIR = "."
+_C.OUTPUT_DIR = "/home/abby/Repositories/maskrcnn-benchmark/output"
 
 _C.PATHS_CATALOG = os.path.join(os.path.dirname(__file__), "paths_catalog.py")
