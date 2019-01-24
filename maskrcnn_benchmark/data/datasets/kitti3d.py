@@ -1,4 +1,3 @@
-# Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 """
 Simple dataset class that wraps a list of path names
 """
