@@ -4,7 +4,7 @@ import os
 import numpy as np
 
 import torch
-from maskrcnn_benchmark.data.datasets.convert_disparity_to_depth import Calib, Camera
+from maskrcnn_benchmark.data.datasets.kitti.convert_disparity_to_depth import Calib
 
 
 class Box3dCoder(object):
@@ -13,7 +13,7 @@ class Box3dCoder(object):
     the representation used for training the regressors.
     """
 
-    def __init__(self, weights, bbox_xform_clip=math.log(1000. / 16)):
+    def __init__(self, weights, root, bbox_xform_clip=math.log(1000. / 16)):
         """
         Arguments:
             weights (4-element tuple)
@@ -22,6 +22,7 @@ class Box3dCoder(object):
         self.weights = weights
         self.bbox_xform_clip = bbox_xform_clip
         self.use_depth_encode = False
+        self.root = root
 
     def encode(self, bbox2d, reference_boxes, labels, img_name, use_2d_project_center=True):
         """
@@ -34,7 +35,7 @@ class Box3dCoder(object):
         """
         device = reference_boxes.device
 
-        cache_file = os.path.join('/home/abby/datasets/kitti/object', 'car_typical_dimension_gt.pkl')
+        cache_file = os.path.join(self.root, 'car_typical_dimension_gt.pkl')
         if os.path.exists(cache_file):
             with open(cache_file, 'rb') as file:
                 typical_dimension = cPickle.load(file)
@@ -59,28 +60,17 @@ class Box3dCoder(object):
         targets_ry = gt_ry
 
         if use_2d_project_center:
-            calib_dir = "/home/abby/datasets/kitti/object/training/calib"
+            calib_dir = os.path.join(self.root, 'training/calib')
             calib = Calib(os.path.join(calib_dir, img_name + '.txt'))
             xyz = torch.stack((gt_ctr_x, gt_ctr_y, gt_ctr_z))
-            uv = self.project_to_image(xyz, calib.lcam.P)
+            uv = self.center_project_to_image(xyz, calib.lcam.P)
             targets_dx = torch.as_tensor(uv[0], dtype=torch.float32, device=device) - bbox2d[:, 0].reshape(-1)
             targets_dy = torch.as_tensor(uv[1], dtype=torch.float32, device=device) - bbox2d[:, 1].reshape(-1)
         else:
             targets_dx = gt_ctr_x
             targets_dy = gt_ctr_y
 
-        if self.use_depth_encode:
-            depth_bin = torch.zeros(reference_boxes.shape[0], dtype=torch.float32, device=device)
-            depth_res = torch.zeros(reference_boxes.shape[0], dtype=torch.float32, device=device)
-            for i in range(reference_boxes.shape[0]):
-                depth_bin[i] = gt_ctr_z[i] // 10
-                if depth_bin[i] > 12:
-                    depth_bin[i] = 12
-                    depth_res[i] = gt_ctr_z[i] - (12 * 10 + 5)
-                else:
-                    depth_res[i] = gt_ctr_z[i] - (depth_bin[i] * 10 + 5)
-        else:
-            targets_dz = gt_ctr_z
+        targets_dz = gt_ctr_z
 
         targets_dl = wl * torch.log(gt_lengths / ex_lengths)
         targets_dh = wh * torch.log(gt_heights / ex_heights)
@@ -100,7 +90,7 @@ class Box3dCoder(object):
             boxes (Tensor): reference boxes. proposal
         """
         device = reference_boxes_3d.device
-        cache_file = os.path.join('/home/abby/datasets/kitti/object', 'car_typical_dimension_gt.pkl')
+        cache_file = os.path.join(self.root, 'car_typical_dimension_gt.pkl')
         if os.path.exists(cache_file):
             with open(cache_file, 'rb') as file:
                 typical_dimension = cPickle.load(file)
@@ -132,20 +122,20 @@ class Box3dCoder(object):
 
         return pred_boxes
 
-    def project_to_image(self, xyz, P):
+    def center_project_to_image(self, xyz, P):
         xyz = xyz.cpu()
         P = np.asmatrix(P)
         uv = P * np.vstack((xyz, np.ones((1, xyz.shape[1]), dtype=np.float32)))
         uv[:2] = uv[:2] / uv[2]
         return np.asarray(uv[:2])
 
-    def xy_decode(self, xyz, img_original_ids, boxes):
+    def center_decode(self, xyz, img_original_ids, boxes):
         xx = []
         yy = []
         zz = []
         for uv, img_name, box in zip(xyz, img_original_ids, boxes):
             box.convert("xywh")
-            calib_dir = "/home/abby/datasets/kitti/object/training/calib"
+            calib_dir = os.path.join(self.root, 'training/calib')
             calib = Calib(os.path.join(calib_dir, img_name + '.txt'))
             x = (uv[:, 0] + box.bbox[:, 0]) * uv[:, 2] / calib.lcam.f
             y = (uv[:, 1] + box.bbox[:, 1]) * uv[:, 2] / calib.lcam.f

@@ -70,7 +70,7 @@ class PostProcessor(nn.Module):
         map_inds = 2 * labels_index.cpu()[:, None] + torch.tensor([0, 1, 2])
 
         pred_box_xyz = box3d_localization_center[index[:, None], map_inds].split(boxes_per_image, dim=0)
-        pred_box_3d_xyz = self.box3d_coder.xy_decode(pred_box_xyz, img_original_ids, boxes)
+        pred_box_3d_xyz = self.box3d_coder.center_decode(pred_box_xyz, img_original_ids, boxes)
 
         pred_box_3d_ry = pred_box_3d_orientation + torch.atan(pred_box_3d_xyz[:, 0] / pred_box_3d_xyz[:, 1])
 

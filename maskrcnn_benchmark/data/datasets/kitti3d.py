@@ -10,7 +10,6 @@ import torch
 import torch.utils.data as data
 from PIL import Image
 from maskrcnn_benchmark.structures.bounding_box_3d import Box3List
-
 from maskrcnn_benchmark.structures.bounding_box import BoxList
 
 TYPICAL_DIMENSION = {}

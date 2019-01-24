@@ -34,9 +34,9 @@ class Box3dList(object):
             raise ValueError("mode should be 'ry-lhwxyz'")
 
         self.bbox_3d = bbox_3d
-        self.rotation = [BoundingBox3DRotation(r, image_size, mode) for r in bbox_3d[:, :1]]
-        self.dimension = [BoundingBox3DDimension(d, image_size, mode) for d in bbox_3d[:, 1:4]]
-        self.localization = [BoundingBox3DLocalization(l, image_size, mode) for l in bbox_3d[:, 4:]]
+        self.rotation = bbox_3d[:, :1]
+        self.dimension = bbox_3d[:, 1:4]
+        self.localization = bbox_3d[:, 4:]
         self.size = image_size  # (image_width, image_height)
         self.mode = mode
 
@@ -65,7 +65,7 @@ class Box3dList(object):
         if ratios[0] == ratios[1]:
             ratio = ratios[0]
             scaled_box = self.bbox_3d * ratio
-            bbox_3d = Box3List(scaled_box, size, mode=self.mode)
+            bbox_3d = Box3dList(scaled_box, size, mode=self.mode)
             # bbox_3d._copy_extra_fields(self)
             return bbox_3d
 
@@ -129,7 +129,7 @@ class Box3dList(object):
             (transposed_rotation, transposed_length, transposed_height, transposed_width, transposed_x, transposed_y,
              transposed_z), dim=-1
         )
-        bbox_3d = Box3List(transposed_boxes_3d, self.size, mode="ry-lhwxyz")
+        bbox_3d = Box3dList(transposed_boxes_3d, self.size, mode="ry-lhwxyz")
         # bbox_3d._copy_extra_fields(self)
         return bbox_3d
 
@@ -163,11 +163,11 @@ class Box3dList(object):
 
 
     def to(self, device):
-        bbox_3d = Box3List(self.bbox_3d.to(device), self.size, self.mode)
+        bbox_3d = Box3dList(self.bbox_3d.to(device), self.size, self.mode)
         return bbox_3d
 
     def __getitem__(self, item):
-        bbox_3d = Box3List(self.bbox_3d[item], self.size, self.mode)
+        bbox_3d = Box3dList(self.bbox_3d[item], self.size, self.mode)
         return bbox_3d
 
     def __len__(self):
@@ -202,46 +202,8 @@ class Box3dList(object):
         return s
 
 
-class BoundingBox3DLocalization(object):
-    def __init__(self, localization, size, mode):
-        if isinstance(localization, list):
-            localization = [torch.as_tensor(l, dtype=torch.float32) for l in localization]
-
-        self.localization = localization
-        self.size = size
-        self.mode = mode
-
-
-class BoundingBox3DDimension(object):
-    def __init__(self, dimension, size, mode):
-        if isinstance(dimension, list):
-            dimension = [torch.as_tensor(d, dtype=torch.float32) for d in dimension]
-
-        self.dimension = dimension
-        self.size = size
-        self.mode = mode
-
-
-class BoundingBox3DRotation(object):
-    def __init__(self, rotation, size, mode):
-        if isinstance(rotation, list):
-            rotation = [torch.as_tensor(r, dtype=torch.float32) for r in rotation]
-
-        self.rotation = rotation
-        self.size = size
-        self.mode = mode
-
-    def __repr__(self):
-        s = self.__class__.__name__ + "("
-        s += "num_boxes3d={}, ".format(len(self))
-        s += "image_width={}, ".format(self.size[0])
-        s += "image_height={}, ".format(self.size[1])
-        s += "mode={})".format(self.mode)
-        return s
-
-
 if __name__ == "__main__":
-    bbox_3d = Box3List([[0, 0, 10, 10, 10, 10, 0], [0, 0, 5, 5, 5, 5, 0]], (10, 10))
+    bbox_3d = Box3dList([[0, 0, 10, 10, 10, 10, 0], [0, 0, 5, 5, 5, 5, 0]], (10, 10))
     s_bbox_3d = bbox_3d.resize((5, 5))
     print(s_bbox_3d)
     print(s_bbox_3d.bbox_3d)

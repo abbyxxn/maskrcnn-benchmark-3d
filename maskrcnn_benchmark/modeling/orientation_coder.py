@@ -55,6 +55,7 @@ class OrientationCoder(object):
             start = bins[i, 1] - overlap
 
         alphas = np.zeros((angle_conf.shape[0],), dtype=np.float32)
+
         for k in range(angle_conf.shape[0]):
             bin_ctrs = ((bins[:, 0] + bins[:, 1]) / 2).reshape(1, -1)  # 1 x num_bins
             conf_ctr = bin_ctrs[0, np.argmax(angle_conf[k, :].reshape(1, -1))]
