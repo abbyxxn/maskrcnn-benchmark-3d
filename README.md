@@ -5,12 +5,12 @@ This repository contains a partial implementation of CVPR 2018 paper ['Multi-Lev
 
 
 ## Highlights
- - [**`Box3DList`**](https://github.com/abbyxxn/maskrcnn-benchmark-3d/blob/master/maskrcnn_benchmark/structures/bounding_box_3d.py#L11) is a structure holds a set of 3D bounding boxes represented as a Nx7 'ry-lwhxyz' tensor in one image. It also contains a set of utility methods that allow to perform geometric transformations to the bounding boxes (such as scaling and flipping).
- - [**`Box3d_head`**](https://github.com/abbyxxn/maskrcnn-benchmark-3d/tree/master/maskrcnn_benchmark/modeling/roi_heads/box3d_head) is a building block similar to `roi_heads/box_head` in 2d, implemented to regress size, dimension and rotation of 3D bounding box.
- - [**`Orientation_coder`**](https://github.com/abbyxxn/maskrcnn-benchmark-3d/blob/master/maskrcnn_benchmark/modeling/orientation_coder.py) the implementation of Multibin in an independent module, separated into encode and decode like modeling/box-coder.
- - [**`KITTIDataset`**](https://github.com/abbyxxn/maskrcnn-benchmark-3d/blob/master/maskrcnn_benchmark/data/datasets/kitti3d.py) a subclasses of torch.utils.data.Dataset, this module support for KITTI dataset and evaluate.
- - [**`KITTI-COCO Converter`**](https://github.com/abbyxxn/maskrcnn-benchmark-3d/blob/master/maskrcnn_benchmark/data/datasets/convert_kitti_pkl_to_coco_json.py) provide some useful functions convert KITTI annotation to json format, if you want to train 2d object detection on KITTI with original powerful annotation processing tools cocoapi/PythonAPI/pycocotools.
-- [**Tensorboard**](https://github.com/abbyxxn/maskrcnn-benchmark-3d/blob/master/maskrcnn_benchmark/utils/miscellaneous.py#L28) support for training visualization.
+ - [**`Box3dList`**](https://github.com/abbyxxn/maskrcnn-benchmark-3d/blob/master/maskrcnn_benchmark/structures/bounding_box_3d.py#L11) is a structure holds a set of 3D bounding boxes represented as a Nx7 'ry-lwhxyz' tensor in one image. It also contains a set of utility methods that allow to perform geometric transformations to the bounding boxes (such as scaling and flipping).
+ - [**`box3d_head`**](https://github.com/abbyxxn/maskrcnn-benchmark-3d/tree/master/maskrcnn_benchmark/modeling/roi_heads/box3d_head) is a building block similar to `roi_heads/box_head` in 2d, implemented to regress size, dimension and rotation of 3D bounding box.
+ - [**`orientation_coder`**](https://github.com/abbyxxn/maskrcnn-benchmark-3d/blob/master/maskrcnn_benchmark/modeling/orientation_coder.py) the implementation of Multibin in an independent module, separated into encode and decode like modeling/box-coder.
+ - [**`kittiDataset`**](https://github.com/abbyxxn/maskrcnn-benchmark-3d/blob/master/maskrcnn_benchmark/data/datasets/kitti3d.py) a subclasses of torch.utils.data.Dataset, this module support for KITTI dataset and evaluate.
+ - provide some useful functions convert KITTI annotation to json format, if you want to train 2d object detection on KITTI with original powerful annotation processing tools cocoapi/PythonAPI/pycocotools.
+ - [**Tensorboard**](https://github.com/abbyxxn/maskrcnn-benchmark-3d/blob/master/maskrcnn_benchmark/utils/miscellaneous.py#L28) support for training visualization.
 
 ### Installation
 
