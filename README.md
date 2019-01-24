@@ -10,7 +10,7 @@ This repository contains a partial implementation of CVPR 2018 paper ['Multi-Lev
  - [**`orientation_coder`**](https://github.com/abbyxxn/maskrcnn-benchmark-3d/blob/master/maskrcnn_benchmark/modeling/orientation_coder.py) the implementation of Multibin in an independent module, separated into encode and decode like modeling/box-coder.
  - [**`kittiDataset`**](https://github.com/abbyxxn/maskrcnn-benchmark-3d/blob/master/maskrcnn_benchmark/data/datasets/kitti3d.py) a subclasses of torch.utils.data.Dataset, this module support for KITTI dataset and evaluate.
  - provide some useful functions convert KITTI annotation to json format, if you want to train 2d object detection on KITTI with original powerful annotation processing tools cocoapi/PythonAPI/pycocotools.
- - [**Tensorboard**](https://github.com/abbyxxn/maskrcnn-benchmark-3d/blob/master/maskrcnn_benchmark/utils/miscellaneous.py#L28) support for training visualization.
+ - [**`Tensorboard`**](https://github.com/abbyxxn/maskrcnn-benchmark-3d/blob/master/maskrcnn_benchmark/utils/miscellaneous.py#L28) support for training visualization.
 
 ### Installation
 
